@@ -1,13 +1,12 @@
 package luceneinaction;
 
+import luceneinaction.common.SearchUtils;
+import luceneinaction.common.TestUtil;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.ScoreDoc;
-import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.search.*;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
@@ -26,7 +25,7 @@ public class Searcher {
         IndexSearcher searcher = new IndexSearcher(dir); //以索引文件目录为参数构造“IndexSearcher- 索引搜索器”实例
 
 
-        QueryParser parser = new QueryParser(Version.LUCENE_30, "contents", new StandardAnalyzer(Version.LUCENE_30));
+        QueryParser parser = new QueryParser(Version.LUCENE_30, "title", new StandardAnalyzer(Version.LUCENE_30));
         Query query = parser.parse(q); //解析查询字符串
 
         long start = System.currentTimeMillis();
@@ -52,9 +51,32 @@ public class Searcher {
         searcher.close();
     }
 
+
+
+
+
+
+    public static void test() throws ParseException, IOException {
+        Query allBooks = new MatchAllDocsQuery();
+        QueryParser parser = new QueryParser(Version.LUCENE_30, "contents", new StandardAnalyzer(Version.LUCENE_30));
+        BooleanQuery query = new BooleanQuery();
+
+        query.add(allBooks, BooleanClause.Occur.SHOULD);
+        query.add(parser.parse("java OR action"), BooleanClause.Occur.SHOULD);
+
+        Directory directory = TestUtil.getBookIndexDirectory(); //打开索引文件用于搜索
+        SearchUtils.displayResults(query, Sort.RELEVANCE);
+
+        System.out.println("**********************************************");
+        SearchUtils.displayResults(query, Sort.INDEXORDER);
+
+    }
+
     public static void main(String[] args) throws IOException, ParseException {
-        String indexDir = "data\\index";
-        String q = "apache";
-        search(indexDir, q);
+       // String indexDir = "index\\books";
+        //String q = "junit";
+       // search(indexDir, q);
+
+        test();
     }
 }

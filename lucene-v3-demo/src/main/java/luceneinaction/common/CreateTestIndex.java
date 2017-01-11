@@ -56,7 +56,7 @@ public class CreateTestIndex {
         doc.add(new Field("title2",
                 title.toLowerCase(),
                 Field.Store.YES,
-                Field.Index.ANALYZED,
+                Field.Index.NOT_ANALYZED_NO_NORMS,
                 Field.TermVector.WITH_POSITIONS_OFFSETS
         ));
 
@@ -80,8 +80,10 @@ public class CreateTestIndex {
                 Field.Index.ANALYZED,
                 Field.TermVector.WITH_POSITIONS_OFFSETS));
 
-        doc.add(new NumericField("pubmonth", Field.Store.YES, true)
-                .setIntValue(Integer.parseInt(pubmonth)));
+        doc.add(
+                new NumericField("pubmonth", Field.Store.YES, true)
+                        .setIntValue(Integer.parseInt(pubmonth))
+        );
 
         Date date;
 
@@ -146,7 +148,7 @@ public class CreateTestIndex {
     public static void main(String[] args) throws IOException, ParseException {
 
         String dataDir = "data";
-        String indexDir = "index/books";
+        String indexDir = "index/books2";
 
         List<File> results = new ArrayList<File>();
         findFiles(results, new File(dataDir));
